@@ -20843,13 +20843,39 @@ async function addCoverPage(pdf, projectData) {
   const mediumGray = rgb(0.27, 0.27, 0.27);
   const lightBlue = rgb(0.9, 0.97, 0.98);
   const borderGray = rgb(0.7, 0.7, 0.7);
-  page.drawText("NEXGEN", {
-    x: 50,
-    y: height - 50,
-    size: 28,
-    font: boldFont,
-    color: nexgenBlue
-  });
+  try {
+    const logoUrl = "https://raw.githubusercontent.com/karthikeyanasha24/pdf-packet-6/main/public/image.png";
+    const logoResponse = await fetch(logoUrl);
+    if (logoResponse.ok) {
+      const logoBytes = await logoResponse.arrayBuffer();
+      const logoImage = await pdf.embedPng(logoBytes);
+      const logoHeight = 25;
+      const logoWidth = logoImage.width / logoImage.height * logoHeight;
+      page.drawImage(logoImage, {
+        x: 50,
+        y: height - 55,
+        width: logoWidth,
+        height: logoHeight
+      });
+    } else {
+      page.drawText("NEXGEN", {
+        x: 50,
+        y: height - 50,
+        size: 24,
+        font: boldFont,
+        color: nexgenBlue
+      });
+    }
+  } catch (error2) {
+    console.warn("Failed to load logo, using text fallback:", error2);
+    page.drawText("NEXGEN", {
+      x: 50,
+      y: height - 50,
+      size: 24,
+      font: boldFont,
+      color: nexgenBlue
+    });
+  }
   const sectionText = "SECTION 06 16 26";
   const sectionWidth = font.widthOfTextAtSize(sectionText, 10);
   page.drawRectangle({
@@ -21068,33 +21094,120 @@ async function addDividerPage(pdf, documentName, documentType, pageNumber) {
   const font = await pdf.embedFont(StandardFonts.Helvetica);
   const boldFont = await pdf.embedFont(StandardFonts.HelveticaBold);
   const nexgenBlue = rgb(0, 0.637, 0.792);
-  page.drawText("SECTION DIVIDER", {
-    x: 50,
-    y: height - 100,
-    size: 16,
-    font: boldFont,
-    color: nexgenBlue
+  const darkGray = rgb(0.08, 0.08, 0.08);
+  const orange = rgb(0.93, 0.39, 0.15);
+  const white = rgb(1, 1, 1);
+  page.drawRectangle({
+    x: 0,
+    y: 0,
+    width,
+    height,
+    color: rgb(0, 0, 0)
+  });
+  page.drawRectangle({
+    x: 0,
+    y: height - 96.75,
+    width,
+    height: 96.75,
+    color: darkGray
+  });
+  try {
+    const logoUrl = "https://raw.githubusercontent.com/karthikeyanasha24/pdf-packet-6/main/public/image-white.png";
+    const logoResponse = await fetch(logoUrl);
+    if (logoResponse.ok) {
+      const logoBytes = await logoResponse.arrayBuffer();
+      const logoImage = await pdf.embedPng(logoBytes);
+      const logoHeight = 30;
+      const logoWidth = logoImage.width / logoImage.height * logoHeight;
+      page.drawImage(logoImage, {
+        x: 15,
+        y: height - 70,
+        width: logoWidth,
+        height: logoHeight
+      });
+    } else {
+      page.drawText("NEXGEN", {
+        x: 15,
+        y: height - 55,
+        size: 24,
+        font: boldFont,
+        color: nexgenBlue
+      });
+    }
+  } catch (error2) {
+    page.drawText("NEXGEN", {
+      x: 15,
+      y: height - 55,
+      size: 24,
+      font: boldFont,
+      color: nexgenBlue
+    });
+  }
+  page.drawText("Package Section Divider", {
+    x: 15,
+    y: height - 82,
+    size: 9,
+    font,
+    color: rgb(0.5, 0.5, 0.5)
+  });
+  page.drawRectangle({
+    x: 0,
+    y: height - 105.75,
+    width,
+    height: 9,
+    color: orange
+  });
+  page.drawRectangle({
+    x: 0,
+    y: 0,
+    width,
+    height: height - 105.75,
+    color: white
+  });
+  const contentStartY = height - 180;
+  page.drawText("Section Divider", {
+    x: 74,
+    y: contentStartY,
+    size: 32,
+    font,
+    color: rgb(0, 0, 0)
   });
   page.drawText(documentName, {
-    x: 50,
-    y: height - 150,
-    size: 20,
+    x: 74,
+    y: contentStartY - 50,
+    size: 40,
     font: boldFont,
     color: rgb(0, 0, 0)
   });
-  page.drawText(`Type: ${documentType}`, {
-    x: 50,
-    y: height - 180,
-    size: 12,
+  page.drawText(`Page ${pageNumber}`, {
+    x: 42,
+    y: 60,
+    size: 10,
     font,
     color: rgb(0.4, 0.4, 0.4)
   });
-  page.drawText(`Page ${pageNumber}`, {
-    x: 50,
-    y: height - 200,
-    size: 10,
+  const footerText = "\xA9 2025 NEXGEN Building Products";
+  const footerWidth = font.widthOfTextAtSize(footerText, 9);
+  page.drawText(footerText, {
+    x: width - footerWidth - 42,
+    y: 40,
+    size: 9,
     font,
-    color: rgb(0.6, 0.6, 0.6)
+    color: white
+  });
+  page.drawRectangle({
+    x: 0,
+    y: 0,
+    width,
+    height: 30,
+    color: nexgenBlue
+  });
+  page.drawText(footerText, {
+    x: width / 2 - footerWidth / 2,
+    y: 12,
+    size: 9,
+    font,
+    color: white
   });
 }
 __name(addDividerPage, "addDividerPage");
